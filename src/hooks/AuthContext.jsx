@@ -2,6 +2,8 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import axiosClient from '../config/axiosClient'
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = React.createContext([{}, ()=>{}])
 
@@ -10,7 +12,16 @@ const AuthProvider = (props) => {
     const [loading, setLoading] = useState(true)
     const router = useRouter()
 
-    
+    if(auth) {
+        const decodedToken = jwtDecode(auth);
+        const currentTime = Date.now() / 1000; 
+        if (decodedToken.exp < currentTime) {
+            toast.error("Expired token")
+            localStorage.removeItem('token')
+            setAuth(false)
+            router.push("/")
+        }
+    }
 
     useEffect(() => {
         const authUser = async() => {
@@ -24,9 +35,8 @@ const AuthProvider = (props) => {
             if(router.pathname === "/"){
                 router.push("/orders")
             }
-            
-            //Login
-            //Redirect
+            authorize()
+
         }
         authUser()
     }, [])
@@ -53,8 +63,23 @@ const AuthProvider = (props) => {
     }
 
     const loginUser = async(username, password) => {
-        localStorage.setItem('token',username+password)
-        authorize()
+
+        try {
+            const response = await axiosClient.post('/auth/login', 
+                new URLSearchParams({
+                    'username': username,
+                    'password': password
+                  }), {
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                  });
+            localStorage.setItem('token',response.data);
+            authorize();
+            
+        } catch (error) {
+            toast.error(error.response.data);
+        }
     }
 
     return (

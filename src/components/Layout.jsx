@@ -31,7 +31,7 @@ const Layout = ({children}) => {
               <DriverProvider>
                 <TruckProvider>
                   <ProductProvider>
-                  <div className='flex flex-row h-screen w-full app'>
+                  <div className='flex flex-row h-screen w-full app '>
                     <div className={`${collaps ? "md:w-20 2xl:w-20" : "md:w-1/4 2xl:w-1/6"}`}>
                       <SidebarLayout/>
                     </div>

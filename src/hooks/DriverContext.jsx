@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
+import axiosClient from '../config/axiosClient';
+import { v4 as uuidv4 } from 'uuid';
 
 const DriverContext = React.createContext([{}, ()=>{}])
 
@@ -7,33 +9,20 @@ const DriverProvider = (props) => {
     const [drivers, setDrivers] = useState([])
     const [actualDriver, setActualDriver] = useState(null)
     const [loading, setLoading] = useState(true)
+    const token = localStorage.getItem('token');
+
+    
     
     const getDrivers = async () => {
-        setLoading(true)  
+        setLoading(true)
         try {
-            const data = [
-                {
-                    nombre: "Juan",
-                    apellido: "Martinez",
-                    dni: "432454654",
-                },
-                {
-                    nombre: "Juan",
-                    apellido: "Martinez",
-                    dni: "432454654",
-                },
-                {
-                    nombre: "Juan",
-                    apellido: "Martinez",
-                    dni: "432454654",
-                },
-            ]
+            const { data } = await axiosClient.get('/chofer/find-all', { headers: { Authorization: `Bearer ${token}` } });
             setDrivers(data)
-            setLoading(false)
+
         } catch (error) {
             console.log(error);
         } 
-        setLoading(false)  
+        setLoading(false) 
     }
     
     const handleActualDriver = (driver) => {
@@ -65,12 +54,14 @@ const DriverProvider = (props) => {
 
     const addDriver = async(driver) => {
         try {
+            driver = {...driver, code: uuidv4()}
+            await axiosClient.post('/chofer', driver, { headers: { Authorization: `Bearer ${token}` } })
             const updatedDrivers = [...drivers];
             updatedDrivers.push(driver)
             setDrivers(updatedDrivers);
             toast.success("Conductor agregado correctamente")
         } catch (error) {
-            console.log(error);
+            toast.error(error.response.data);
         }   
     }
     

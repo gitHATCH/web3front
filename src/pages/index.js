@@ -5,9 +5,9 @@ import { AuthContext } from '../hooks/AuthContext';
 
 export default function Home() {
   const {loading, loginUser,auth} = useContext(AuthContext);
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  console.log(auth);
   
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <>
-      {!loading && (
+      {!loading && !auth && (
         <div className='flex h-full w-full items-center justify-center'>
           <div className='p-10 rounded-2xl w-1/3  bg-slate-200 shadow-xl shadow-black'>
             <h1 className='text-center text-4xl font-mono font-semibold text-green-900 tracking-wider'>Iniciar Sesión</h1>

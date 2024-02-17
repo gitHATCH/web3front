@@ -10,7 +10,7 @@ const Drivers = () => {
     const [drivers,getDrivers,loading,actualDriver,handleActualDriver,deleteDriver,editDriver] = useContext(DriverContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Nombre", "Apellido", "DNI"]
+    const headers = ["DNI", "Nombre", "Apellido", "Código Externo"]
 
     useEffect(() => {
         getDrivers()

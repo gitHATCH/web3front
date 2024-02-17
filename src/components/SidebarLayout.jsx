@@ -32,12 +32,12 @@ const SidebarLayout = () => {
     const {auth} = useContext(AuthContext);
     const router = useRouter()
 
-    useEffect(() => {
-        if(!auth && router.pathname !== '/') {
-            toast.error("No estas autorizado")
-            router.push("/")
-        }
-    }, [router.pathname])
+    // useEffect(() => {
+    //     if(!auth && router.pathname !== '/') {
+    //         toast.error("No estas autorizado")
+    //         router.push("/")
+    //     }
+    // }, [router.pathname])
     
     
     const logout = () => {
@@ -171,9 +171,6 @@ const SidebarLayout = () => {
                             </Link>
                             <hr className='h-0.5 bg-slate-200 border-slate-200'/>
                             
-                        </div>
-                        <div className=''>
-                            {/*Logout*/}
                             <button onClick={logout}>
                                 <MenuItem 
                                     icon={<LogoutIcon className={`${collaps ? (modalLogOut ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
@@ -189,6 +186,9 @@ const SidebarLayout = () => {
                                     {!collaps && <h2 className={`font-mono md:text-lg 2xl:text-2xl tracking-widest ml-10`}>Cerrar Sesión</h2>}
                                 </MenuItem>
                             </button>
+                        </div>
+                        <div className=''>
+                            {/*Logout*/}
                             <hr className='h-0.5 bg-slate-200 border-slate-200'/>
                         </div>
                         

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
+import axiosClient from '../config/axiosClient';
+import { v4 as uuidv4 } from 'uuid';
 
 const ClientContext = React.createContext([{}, ()=>{}])
 
@@ -7,25 +9,14 @@ const ClientProvider = (props) => {
     const [clients, setClients] = useState([])
     const [actualClient, setActualClient] = useState(null)
     const [loading, setLoading] = useState(true)
-    
+    const token = localStorage.getItem('token');
+
     const getClients = async () => {
         setLoading(true)
         try {
-            const data = [
-                {
-                    razonSocial: "Richard GranT",
-                    contacto: "8484885",
-                },
-                {
-                    razonSocial: "Richard GranB",
-                    contacto: "8484885",
-                },
-                {
-                    razonSocial: "Richard Gran",
-                    contacto: "8484885",
-                },
-            ]
+            const { data } = await axiosClient.get('/cliente/find-all', { headers: { Authorization: `Bearer ${token}` } });
             setClients(data)
+
         } catch (error) {
             console.log(error);
         } 
@@ -47,6 +38,7 @@ const ClientProvider = (props) => {
         }
     }
 
+    //TODO: Ver si dejamos o no
     const editClient = async(client) => {
         try {
             const updatedClients = [...clients];
@@ -60,13 +52,15 @@ const ClientProvider = (props) => {
     }
 
     const addClient = async(client) => {
-        try {
+        try {       
+            client = {...client, code: uuidv4()}
+            await axiosClient.post('/cliente', client, { headers: { Authorization: `Bearer ${token}` } })
             const updatedClients = [...clients];
             updatedClients.push(client)
             setClients(updatedClients);
             toast.success("Cliente agregado correctamente")
         } catch (error) {
-            console.log(error);
+            toast.error(error.response.data);
         }   
     }
     

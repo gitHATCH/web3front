@@ -14,7 +14,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { TruckContext } from '../../hooks/TruckContext';
 
-//* Arreglar lo de las cisternas para que muestre uno por cada una y que permita agregar otra *//
+//* Arreglar lo de las datosCisterna para que muestre uno por cada una y que permita agregar otra *//
 const ModalEditTruck = ({editActual}) => {
     const [modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd] = useContext(ModalContext);
     const [trucks,getTrucks,loading,actualTruck,handleActualTruck,deleteTruck,editTruck,addTruck] = useContext(TruckContext);
@@ -26,7 +26,7 @@ const ModalEditTruck = ({editActual}) => {
             setTruck({
                 patente: null,
                 descripcion: null,
-                cisternas:[]
+                datosCisterna:[]
             })
         }
     }, [])
@@ -56,14 +56,14 @@ const ModalEditTruck = ({editActual}) => {
             editActual(truck)
         }else{
             console.log(truck);
-            if(!truck.patente || !truck.descripcion || !truck.cisternas.length > 0){
+            if(!truck.patente || !truck.descripcion || !truck.datosCisterna.length > 0){
                 toast.error("Todos los campos son obligatorios")
                 return
             }
             let flag = true
-            truck.cisternas.forEach(cisterna => {
-                if(cisterna <= 0){
-                    
+            //TODO: Cambiar
+            truck.datosCisterna.forEach(cisterna => {
+                if(cisterna.tamanio <= 0){   
                     flag = false
                 }
             });
@@ -76,25 +76,25 @@ const ModalEditTruck = ({editActual}) => {
         handleModalEdit()
     }
 
-    const handleCisternasChange = (index, value) => {
+    const handledatosCisternaChange = (index, value) => {
         const updatedTruck = { ...truck };
-        updatedTruck.cisternas[index] = value;
+        updatedTruck.datosCisterna[index].tamanio = value;
         setTruck(updatedTruck);
     };
 
     const addCisternaField = () => {
-        if(truck.cisternas.length > 7){
-            toast.error("El Maximo de cisternas admitido por camion es de 8")
+        if(truck.datosCisterna.length > 8){
+            toast.error("El Maximo de datosCisterna admitido por camion es de 8")
             return
         }
         const updatedTruck = { ...truck };
-        updatedTruck.cisternas.push(0); 
+        updatedTruck.datosCisterna.push({tamanio: 0}); 
         setTruck(updatedTruck);
     };
 
     const removeCisternaField = (index) => {
         const updatedTruck = { ...truck };
-        updatedTruck.cisternas.splice(index, 1);
+        updatedTruck.datosCisterna.splice(index, 1);
         setTruck(updatedTruck);
     };
 
@@ -141,7 +141,7 @@ const ModalEditTruck = ({editActual}) => {
                                 </div>
 
                                 <div className='mt-20'>
-                                    {truck?.cisternas?.map((capacity, index) => (
+                                    {truck?.datosCisterna?.map((capacity, index) => (
                                         <div key={index} className='mt-10 flex items-center '>
                                             <label className='mr-5 font-mono text-white text-xl font-semibold flex-9'>
                                                 Cisterna {index + 1}
@@ -149,9 +149,9 @@ const ModalEditTruck = ({editActual}) => {
                                             <input
                                                 type='number'
                                                 placeholder='Capacidad de la cisterna'
-                                                value={capacity}
+                                                value={capacity.tamanio}
                                                 className='flex-1 rounded-md h-8 p-2 bg-slate-600 h-11'
-                                                onChange={(e) => handleCisternasChange(index, parseInt(e.target.value))}
+                                                onChange={(e) => handledatosCisternaChange(index, parseInt(e.target.value))}
                                             />
                                             
                                             <div className=''>

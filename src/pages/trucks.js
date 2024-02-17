@@ -10,7 +10,7 @@ const Trucks = () => {
     const [trucks,getTrucks,loading,actualTruck,handleActualTruck,deleteTruck,editTruck] = useContext(TruckContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Patente", "Descripcion", "Cisternas"]
+    const headers = ["Patente", "Descripcion", "Cisternas", "Código Externo"]
 
     useEffect(() => {
         getTrucks()

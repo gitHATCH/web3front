@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
+import axiosClient from '../config/axiosClient';
+import { v4 as uuidv4 } from 'uuid';
 
 const OrderContext = React.createContext([{}, ()=>{}])
 
@@ -7,63 +9,31 @@ const OrderProvider = (props) => {
     const [orders, setOrders] = useState([])
     const [actualOrder, setActualOrder] = useState(null)
     const [loading, setLoading] = useState(true)
+    const token = localStorage.getItem('token');
     
     const getOrders = async () => {
-        setLoading(true)  
+        setLoading(true)
         try {
-            const data = [
-                {
-                    numero: "1",
-                    estado: 1,
-                    preset: 3000,
-                    camion: "4515asdsa24",
-                    cliente: "4515asdsa24",
-                    chofer: "4515asdsa24",
-                    producto: "asgasgas",
-                    umbral: 50,
-                    alarma:1
-        
-                },
-                {
-                    numero: "2",
-                    estado: 2,
-                    preset: 3000,
-                    camion: "4515asdsa24",
-                    cliente: "4515asdsa24",
-                    chofer: "4515asdsa24",
-                    producto: "asgasgas",
-                    umbral: 50,
-                    alarma:1
-                },
-                {
-                    numero: "3",
-                    estado: 3,
-                    preset: 3000,
-                    camion: "4515asdsa24",
-                    cliente: "4515asdsa24",
-                    chofer: "4515asdsa24",
-                    producto: "asgasgas",
-                    umbral: 50,
-                    alarma:1
-                },
-                {
-                    numero: "4",
-                    estado: 4,
-                    preset: 3000,
-                    camion: "4515asdsa24",
-                    cliente: "4515asdsa24",
-                    chofer: "4515asdsa24",
-                    producto: "asgasgas",
-                    umbral: 50,
-                    alarma:1
+            const response = (await axiosClient.get('/orden/find-all', { headers: { Authorization: `Bearer ${token}` } }));
+            const data = response.data
+            .map((orden) => { 
+                return {
+                    numeroOrden: orden.numeroOrden,
+                    estado: orden.estado,
+                    preset: orden.preset,
+                    camion: orden.camion.patente,
+                    cliente: orden.cliente.razonSocial,
+                    chofer: orden.chofer.dni,
+                    producto: orden.producto.nombre,
                 }
-            ]
+            })   
+            console.log(data);  
             setOrders(data)
-            setLoading(false)
+
         } catch (error) {
             console.log(error);
         } 
-        setLoading(false)  
+        setLoading(false) 
     }
     
     const handleActualOrder = (order) => {
@@ -96,6 +66,9 @@ const OrderProvider = (props) => {
 
     const addOrder = async(order) => {
         try {
+            const sendOrder = {...order, camion: order.camion.code, cliente: order.cliente.code, chofer: order.chofer.code, producto: order.producto.code}
+            await axiosClient.post('/orden', sendOrder, { headers: { Authorization: `Bearer ${token}` } })
+            order = {...order, camion: order.camion.patente, cliente: order.cliente.razonSocial, chofer: order.chofer.dni, producto: order.producto.nombre}
             const updatedOrders = [...orders];
             updatedOrders.push(order)
             setOrders(updatedOrders);

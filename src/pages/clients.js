@@ -3,14 +3,16 @@ import DefaultTable from '../components/DefaultTable'
 import { ClientContext } from '../hooks/ClientContext'
 import Spinner from '../components/Spinner'
 import { ModalContext } from '../hooks/ModalContext'
+import { AuthContext } from '../hooks/AuthContext'
 import ModalDelete from '../components/Modals/ModalDelete'
 import ModalEditClient from '../components/Modals/ModalEditClient'
 
 const Clients = () => {
     const [clients,getClients,loading,actualClient,handleActualClient,deleteClient,editClient] = useContext(ClientContext)
+
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Razón Social", "Contacto"]
+    const headers = ["Razón Social", "Contacto", "Código Externo"]
     
     useEffect(() => {
         getClients()

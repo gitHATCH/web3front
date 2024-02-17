@@ -16,6 +16,15 @@ import { ProductContext } from '../../hooks/ProductContext';
 import { DriverContext } from '../../hooks/DriverContext';
 import { TruckContext } from '../../hooks/TruckContext';
 
+import DatePicker from "react-datepicker";
+
+
+import "react-datepicker/dist/react-datepicker.css";
+
+/*
+
+*/
+
 //* Arreglar lo de los select valor por defecto *//
 
 const ModalEditOrder = ({editActual}) => {
@@ -25,8 +34,12 @@ const ModalEditOrder = ({editActual}) => {
     const [clients, getClients] = useContext(ClientContext);
     const [drivers, getDrivers] = useContext(DriverContext);
     const [trucks, getTrucks] = useContext(TruckContext);
+    const [date, setDate] = useState(null)
 
-    const [order, setOrder] = useState({}) 
+    const [order, setOrder] = useState(new Date()) 
+
+  
+
     useEffect(() => {
         if(!modalAdd){
             setOrder(orders[actualOrder])
@@ -40,7 +53,7 @@ const ModalEditOrder = ({editActual}) => {
     const handleNumberChange = (event) => {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          numero: event.target.value,
+          numeroOrden: event.target.value,
         }));
     };
     const handleStateChange = (event) => {
@@ -82,15 +95,23 @@ const ModalEditOrder = ({editActual}) => {
         }));
     };
 
+    const handleDateChange = (event) => {
+        setOrder((prevOrder) => ({
+            ...prevOrder,
+            fechaTurnoCarga: event.toISOString(),
+        }));
+    }
+
     const cancelOption = () => {
         handleModalEdit()
     }
     const confirmOption = () => {
-        console.log(order);
+        // console.log(order);
         if(!modalAdd){
             editActual(order)
         }else{
-            if(!order.numero || !order.estado || !order.preset || !order.camion || !order.cliente || !order.chofer || !order.producto){
+            console.log(order);
+            if(!order.numeroOrden || !order.preset || !order.camion || !order.cliente || !order.chofer || !order.producto){
                 toast.error("Todos los campos son obligatorios")
                 return
             }
@@ -136,7 +157,8 @@ const ModalEditOrder = ({editActual}) => {
                                     <label htmlFor='num' className='mr-5 font-mono text-white text-xl font-semibold flex-9'>Número</label>
                                     <input id="num" type='number' placeholder='Número de Orden' defaultValue={order?.numero} className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={handleNumberChange}/>
                                 </div>
-                                <div className='mt-10 flex items-center'>
+                                
+                                {/* <div className='mt-10 flex items-center'>
                                     <label htmlFor='state' className='mr-5 font-mono text-white text-xl font-semibold flex-9'>Estado</label>
                                     <select id="state" className='flex-1 rounded-md p-2 bg-slate-600 h-11' defaultValue={""} onChange={handleStateChange}>
                                         <option value={""}>Seleccione un estado</option>
@@ -147,7 +169,7 @@ const ModalEditOrder = ({editActual}) => {
                                         <option value={4}>4</option>
                                         <option value={5}>5</option>
                                     </select>
-                                </div>
+                                </div> */}
 
                                 <div className='mt-10 flex items-center'>
                                     <label htmlFor='preset' className='mr-5 font-mono text-white text-xl font-semibold flex-9'>Preset</label>
@@ -158,7 +180,7 @@ const ModalEditOrder = ({editActual}) => {
                                     <select id="truck" className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={handleTruckChange} defaultValue={""}>
                                         <option value={""}>Seleccione un Camion</option>
                                         {trucks?.map((truck, index) => (
-                                                <option key={index} value={truck?.patente}>
+                                                <option key={index} value={truck}>
                                                     {truck.patente}
                                                 </option>
                                         ))}
@@ -169,7 +191,7 @@ const ModalEditOrder = ({editActual}) => {
                                     <select id="client" className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={handleClientChange} defaultValue={""}>
                                         <option value={""}>Seleccione un Cliente</option>
                                         {clients?.map((client, index) => (
-                                                <option key={index} value={client?.razonSocial}>
+                                                <option key={index} value={client}>
                                                     {client.razonSocial}
                                                 </option>
                                         ))}
@@ -182,7 +204,7 @@ const ModalEditOrder = ({editActual}) => {
                                         <option value={""}>Seleccione un Conductor</option>
 
                                         {drivers?.map((driver, index) => (
-                                                <option key={index} value={driver?.dni}>
+                                                <option key={index} value={driver}>
                                                     {driver.dni}
                                                 </option>
                                         ))}
@@ -194,11 +216,21 @@ const ModalEditOrder = ({editActual}) => {
                                         <option value={""}>Seleccione un Producto</option>
 
                                         {products?.map((product, index) => (
-                                                <option key={index} value={product?.nombre}>
+                                                <option key={index} value={product}>
                                                     {product.nombre}
                                                 </option>
                                         ))}
                                     </select>
+                                </div>
+                                <div className='mt-10 flex items-center'>
+                                    <label htmlFor='date' className='mr-5 font-mono text-white text-xl font-semibold flex-9'>Turno para Carga</label>
+                                    {/* <input type='datetime-local' id='date' className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={(e) => handleDateChange(e)}/> */}
+                                    <DatePicker
+                                        selected={order?.fechaTurnoCarga ? new Date(order?.fechaTurnoCarga) : new Date()}
+                                        onChange={(event)=>handleDateChange(event)}
+                                        showTimeSelect
+                                        dateFormat="Pp"
+                                    />
                                 </div>
                             </form>
                         </div>

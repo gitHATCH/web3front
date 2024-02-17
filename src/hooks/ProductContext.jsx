@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
+import axiosClient from '../config/axiosClient';
+import { v4 as uuidv4 } from 'uuid';
 
 const ProductContext = React.createContext([{}, ()=>{}])
 
@@ -7,30 +9,26 @@ const ProductProvider = (props) => {
     const [products, setProducts] = useState([])
     const [actualProduct, setActualProduct] = useState(null)
     const [loading, setLoading] = useState(true)
+    const token = localStorage.getItem('token');
     
     const getProducts = async () => {
-        setLoading(true)  
+        setLoading(true)
         try {
-            const data = [
-                {
-                    nombre: "Abng2",
-                    descripcion: "Gas peligroso",
-                },
-                {
-                    nombre: "Abng2",
-                    descripcion: "Gas peligroso",
-                },
-                {
-                    nombre: "Abng2",
-                    descripcion: "Gas peligroso",
-                },
-            ]
+            const response = (await axiosClient.get('/producto/find-all', { headers: { Authorization: `Bearer ${token}` } }));
+            const data = response.data
+            .map((product) => { 
+                return {
+                    nombre: product.nombre,
+                    descripcion: product.descripcion,
+                    code: product.code
+                }
+            })          
             setProducts(data)
-            setLoading(false)
+
         } catch (error) {
             console.log(error);
         } 
-        setLoading(false)  
+        setLoading(false) 
     }
     
     const handleActualProduct = (product) => {
@@ -62,6 +60,9 @@ const ProductProvider = (props) => {
 
     const addProduct = async(product) => {
         try {
+
+            product = {...product, code: uuidv4()};
+            await axiosClient.post('/producto', {...product, id: Date.now()}, { headers: { Authorization: `Bearer ${token}` } })
             const updatedProducts = [...products];
             updatedProducts.push(product)
             setProducts(updatedProducts);

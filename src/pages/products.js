@@ -10,7 +10,7 @@ const Products = () => {
     const [products,getProducts,loading,actualProduct,handleActualProduct,deleteProduct,editProduct] = useContext(ProductContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Nombre", "Descripcion"]
+    const headers = ["Nombre", "Descripcion", "Código Externo"]
 
     useEffect(() => {
         getProducts()
