@@ -14,34 +14,49 @@ const OrderProvider = (props) => {
             const data = [
                 {
                     numero: "1",
-                    estado: 0,
-                    preset: 3000,
-                    camion: "4515asdsa24",
-                    cliente: "4515asdsa24",
-                    chofer: "4515asdsa24",
-                    producto: "asgasgas",
-        
-                },
-                {
-                    numero: "2",
                     estado: 1,
                     preset: 3000,
                     camion: "4515asdsa24",
                     cliente: "4515asdsa24",
                     chofer: "4515asdsa24",
                     producto: "asgasgas",
+                    umbral: 50,
+                    alarma:1
         
                 },
                 {
-                    numero: "3",
+                    numero: "2",
                     estado: 2,
                     preset: 3000,
                     camion: "4515asdsa24",
                     cliente: "4515asdsa24",
                     chofer: "4515asdsa24",
                     producto: "asgasgas",
-        
+                    umbral: 50,
+                    alarma:1
                 },
+                {
+                    numero: "3",
+                    estado: 3,
+                    preset: 3000,
+                    camion: "4515asdsa24",
+                    cliente: "4515asdsa24",
+                    chofer: "4515asdsa24",
+                    producto: "asgasgas",
+                    umbral: 50,
+                    alarma:1
+                },
+                {
+                    numero: "4",
+                    estado: 4,
+                    preset: 3000,
+                    camion: "4515asdsa24",
+                    cliente: "4515asdsa24",
+                    chofer: "4515asdsa24",
+                    producto: "asgasgas",
+                    umbral: 50,
+                    alarma:1
+                }
             ]
             setOrders(data)
             setLoading(false)
@@ -89,9 +104,81 @@ const OrderProvider = (props) => {
             console.log(error);
         }   
     }
+
+
+    const addTara = async(order) => {
+        try {
+            //TODO: add tara
+            const updatedOrders = [...orders];
+            updatedOrders[actualOrder] = {...updatedOrders[order], estado: 2};
+            setOrders(updatedOrders);
+         
+            toast.info('Clave de activación copiada al portapapeles!')
+            navigator.clipboard.writeText('123456')
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const turnBomb = async (setColor) => {
+        try {
+            const updatedOrders = [...orders];
+            const newTime = new Date();
+            updatedOrders[actualOrder] = {...updatedOrders[actualOrder], tiempoInicio: newTime, cargas: []};
+            setOrders(updatedOrders);
+            loadTruck(() => setColor(),newTime);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const loadTruck = async (setColor,newTime) => {
+        try {
+            let load = 0
+            const interval = setInterval(() => {
+                const tiempoTranscurrido = (Date.now() - newTime) / 1000;
+                const caudal = Math.random() * 100
+                const cargaRestante = orders[actualOrder].preset - load;
+                const eta = caudal > 0 ? cargaRestante / caudal : Infinity;
+                const ultimaCarga = {
+                    temperatura: Math.random() * 100,
+                    densidad: Math.random() * 100,
+                    caudal: caudal,
+                    masa: load,
+                    eta: eta,
+                    tiempo: tiempoTranscurrido,
+                    fecha: Date.now(),
+                }
+                setOrders(prevOrders => {
+                    const updatedOrders = [...prevOrders];
+                    updatedOrders[actualOrder] = {...updatedOrders[actualOrder], ultimaCarga: ultimaCarga};
+                    updatedOrders[actualOrder].cargas = [...(updatedOrders[actualOrder].cargas || []), ultimaCarga];
+                    return updatedOrders;
+                });
+                load += 500
+                if(load > orders[actualOrder].preset) {
+                    clearInterval(interval)
+                    setOrders(prevOrders => {
+                        const updatedOrders = [...prevOrders];
+                        updatedOrders[actualOrder] = {...updatedOrders[actualOrder], estado: 3, tiempoFin: new Date()};
+                        return updatedOrders;
+                    });
+                    toast.success("Carga completada")
+                    setColor("text-red-800 hover:text-red-900")
+                }
+            }, 1000);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getConcil = () => {
+        console.log('getConcil');
+    }
     
     return (
-        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder]}>
+        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil]}>
             {props.children}
         </OrderContext.Provider>
     )      

@@ -7,7 +7,8 @@ export default function Home() {
   const {loading, loginUser,auth} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
- 
+  console.log(auth);
+  
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };

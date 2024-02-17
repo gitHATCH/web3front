@@ -75,13 +75,15 @@ export default function DefaultTable({headers, data, setActual, bombs}) {
                                 </button>
                             </th>
                         ) : (
-                            <th className='w-full'>
+                            <th className='w-full flex items-start'>
                                 <button className='text-2xl font-mono font-normal tracking-widest mr-10 hover:bg-slate-300 rounded-full p-1' onClick={() => goOrder(index)}>
                                     <PropaneIcon className={`text-blue-900`} style={{ fontSize: '2rem'}}/>
                                 </button>
-                                <button className='text-2xl font-mono font-normal tracking-widest hover:bg-slate-300 rounded-full p-1'>
-                                    <ArticleIcon className={`text-blue-900`} style={{ fontSize: '2rem'}}/>
-                                </button>
+                                {field.estado >= 4 &&
+                                    <button className='text-2xl font-mono font-normal tracking-widest hover:bg-slate-300 rounded-full p-1'>
+                                        <ArticleIcon className={`text-blue-900`} style={{ fontSize: '2rem'}}/>
+                                    </button>
+                                }
                             </th>
                         )}
                             

@@ -1,6 +1,7 @@
 /* Contexto del Slidebar */
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 
 const AuthContext = React.createContext([{}, ()=>{}])
 
@@ -8,6 +9,8 @@ const AuthProvider = (props) => {
     const [auth, setAuth] = useState(false)
     const [loading, setLoading] = useState(true)
     const router = useRouter()
+
+    
 
     useEffect(() => {
         const authUser = async() => {
@@ -34,17 +37,17 @@ const AuthProvider = (props) => {
         if(!token){
             return
         }
+
         setAuth(token)
         router.push("/orders")
-    }
 
+    }
     const unAuthorize = async() => {
         setAuth(false)
         setLoading(false)
         localStorage.removeItem('token')
         router.push("/")
     }
-    
     const handleAuth = (token) => {
         setAuth(token)
     }
