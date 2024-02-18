@@ -26,8 +26,7 @@ const OrderProvider = (props) => {
                     chofer: orden.chofer.dni,
                     producto: orden.producto.nombre,
                 }
-            })   
-            console.log(data);  
+            })    
             setOrders(data)
 
         } catch (error) {
@@ -67,8 +66,8 @@ const OrderProvider = (props) => {
     const addOrder = async(order) => {
         try {
             const sendOrder = {...order, camion: order.camion.code, cliente: order.cliente.code, chofer: order.chofer.code, producto: order.producto.code}
-            await axiosClient.post('/orden', sendOrder, { headers: { Authorization: `Bearer ${token}` } })
-            order = {...order, camion: order.camion.patente, cliente: order.cliente.razonSocial, chofer: order.chofer.dni, producto: order.producto.nombre}
+            await axiosClient.post('/orden/b2b', sendOrder, { headers: { Authorization: `Bearer ${token}` } })
+            order = {numeroOrden: order.numeroOrden, estado:1, preset:order.preset, camion: order.camion.patente, cliente: order.cliente.razonSocial, chofer: order.chofer.dni, producto: order.producto.nombre}
             const updatedOrders = [...orders];
             updatedOrders.push(order)
             setOrders(updatedOrders);

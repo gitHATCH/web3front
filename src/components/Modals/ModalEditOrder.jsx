@@ -36,7 +36,9 @@ const ModalEditOrder = ({editActual}) => {
     const [trucks, getTrucks] = useContext(TruckContext);
     const [date, setDate] = useState(null)
 
-    const [order, setOrder] = useState(new Date()) 
+    const [order, setOrder] = useState({
+        fechaTurnoCarga: new Date()
+    }) 
 
   
 
@@ -53,7 +55,7 @@ const ModalEditOrder = ({editActual}) => {
     const handleNumberChange = (event) => {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          numeroOrden: event.target.value,
+          numeroOrden: Number(event.target.value),
         }));
     };
     const handleStateChange = (event) => {
@@ -67,31 +69,32 @@ const ModalEditOrder = ({editActual}) => {
     const handlePresetChange = (event) => {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          preset: event.target.value,
+          preset: Number(event.target.value),
         }));
     };
     const handleTruckChange = (event) => {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          camion: event.target.value,
+          camion: trucks[event.target.value],
         }));
     };
     const handleClientChange = (event) => {
+
         setOrder((prevOrder) => ({
           ...prevOrder,
-          cliente: event.target.value,
+          cliente: clients[event.target.value],
         }));
     };
     const handleDriverChange = (event) => {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          chofer: event.target.value,
+          chofer: drivers[event.target.value],
         }));
     };
     const handleProductChange = (event) => {
         setOrder((prevOrder) => ({
           ...prevOrder,
-          producto: event.target.value,
+          producto: products[event.target.value],
         }));
     };
 
@@ -177,10 +180,10 @@ const ModalEditOrder = ({editActual}) => {
                                 </div>
                                 <div className='mt-10 flex items-center'>
                                     <label htmlFor='truck' className='mr-5 font-mono text-white text-xl font-semibold flex-9'>Camión</label>
-                                    <select id="truck" className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={handleTruckChange} defaultValue={""}>
+                                    <select id="truck" className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={(event) => handleTruckChange(event)} defaultValue={""}>
                                         <option value={""}>Seleccione un Camion</option>
                                         {trucks?.map((truck, index) => (
-                                                <option key={index} value={truck}>
+                                                <option key={index} value={index}>
                                                     {truck.patente}
                                                 </option>
                                         ))}
@@ -191,7 +194,7 @@ const ModalEditOrder = ({editActual}) => {
                                     <select id="client" className='flex-1 rounded-md p-2 bg-slate-600 h-11' onChange={handleClientChange} defaultValue={""}>
                                         <option value={""}>Seleccione un Cliente</option>
                                         {clients?.map((client, index) => (
-                                                <option key={index} value={client}>
+                                                <option key={index} value={index}>
                                                     {client.razonSocial}
                                                 </option>
                                         ))}
@@ -204,7 +207,7 @@ const ModalEditOrder = ({editActual}) => {
                                         <option value={""}>Seleccione un Conductor</option>
 
                                         {drivers?.map((driver, index) => (
-                                                <option key={index} value={driver}>
+                                                <option key={index} value={index}>
                                                     {driver.dni}
                                                 </option>
                                         ))}
@@ -216,7 +219,7 @@ const ModalEditOrder = ({editActual}) => {
                                         <option value={""}>Seleccione un Producto</option>
 
                                         {products?.map((product, index) => (
-                                                <option key={index} value={product}>
+                                                <option key={index} value={index}>
                                                     {product.nombre}
                                                 </option>
                                         ))}

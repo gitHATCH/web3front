@@ -25,7 +25,6 @@ const TruckProvider = (props) => {
                 }
             });     
             setTrucks(data)
-            console.log(data);
         } catch (error) {
             console.log(error);
         } 

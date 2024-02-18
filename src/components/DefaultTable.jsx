@@ -43,8 +43,8 @@ export default function DefaultTable({headers, data, setActual, bombs}) {
 
   return (
     <>
-        <div className='w-full flex justify-center'>
-            <table className='w-full shadow-2xl border '>
+        <div className='w-full flex justify-center px-3'>
+            <table className='w-full shadow-2xl border'>
                 <thead className='bg-slate-300'>
                     <tr className='w-full flex justify-between'>
                         {headers.map((header, index) => (
