@@ -28,7 +28,17 @@ const Trucks = () => {
                 ) : (
                     trucks?.length > 0 ? (
                         <div className='mt-20'>
-                            <DefaultTable headers={headers} data={trucks} tipo="truck" setActual={handleActualTruck}/>
+                            <DefaultTable headers={headers} data={
+                                    trucks.map((truck) => { 
+                                        return {
+                                            patente: truck.patente,
+                                            descripcion: truck.descripcion,
+                                            totalCisterna: truck.totalCisterna,
+                                            code: truck.code,
+                                        }
+                                    })
+                                } 
+                            tipo="truck" setActual={handleActualTruck}/>
                         </div>
                     ) : (
                         <>

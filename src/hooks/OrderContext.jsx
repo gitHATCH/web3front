@@ -16,6 +16,7 @@ const OrderProvider = (props) => {
         try {
             const response = (await axiosClient.get('/orden/find-all', { headers: { Authorization: `Bearer ${token}` } }));
             const data = response.data
+            /*
             .map((orden) => { 
                 return {
                     numeroOrden: orden.numeroOrden,
@@ -27,6 +28,7 @@ const OrderProvider = (props) => {
                     producto: orden.producto.nombre,
                 }
             })    
+            */
             setOrders(data)
 
         } catch (error) {
@@ -36,7 +38,7 @@ const OrderProvider = (props) => {
     }
     
     const handleActualOrder = (order) => {
-        setActualOrder(order)
+        setActualOrder(orders[order])
     }
 
     const deleteOrder = async() => {
@@ -78,16 +80,16 @@ const OrderProvider = (props) => {
     }
 
 
-    const addTara = async(order) => {
+    const addTara = async() => {
         try {
-            //TODO: add tara
-            const updatedOrders = [...orders];
-            updatedOrders[actualOrder] = {...updatedOrders[order], estado: 2};
-            setOrders(updatedOrders);
-         
+            const numeroOrden = Number(actualOrder.numeroOrden)
+            const randomNumber = Math.random() * (25000 - 10000) + 10000;
+            const tara = Math.floor(randomNumber);
+            const response = await axiosClient.put('/orden/checkin', {pesaje_inicial:tara}, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            console.log(response);
+            setActualOrder({...actualOrder, tara: tara, estado:2});
             toast.info('Clave de activación copiada al portapapeles!')
-            navigator.clipboard.writeText('123456')
-            
+            navigator.clipboard.writeText(response.data.password)
         } catch (error) {
             console.log(error);
         }
@@ -100,6 +102,17 @@ const OrderProvider = (props) => {
             updatedOrders[actualOrder] = {...updatedOrders[actualOrder], tiempoInicio: newTime, cargas: []};
             setOrders(updatedOrders);
             loadTruck(() => setColor(),newTime);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const disableAlarm = async () => {
+        const numeroOrden = Number(actualOrder.numeroOrden)
+        try {
+            const response = await axiosClient.post('/orden/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            toast.success("Alarma desactivada")
+            setActualOrder({...actualOrder, alarma:false})
         } catch (error) {
             console.log(error);
         }
@@ -150,7 +163,7 @@ const OrderProvider = (props) => {
     }
     
     return (
-        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil]}>
+        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil,disableAlarm]}>
             {props.children}
         </OrderContext.Provider>
     )      

@@ -37,7 +37,7 @@ export default function DefaultTable({headers, data, setActual, bombs}) {
     //TODO:
     const goOrder = (index) => {
         setActual(index)
-        router.push(`/bombs/${data[index].numero}`)
+        router.push(`/bombs/${data[index].numeroOrden}`)
         
     }
 
@@ -82,15 +82,15 @@ export default function DefaultTable({headers, data, setActual, bombs}) {
                             </th>
                         }*/}
                         {bombs && (
-                            <th className='w-full flex items-start'>
-                                <button className='text-2xl font-mono font-normal tracking-widest mr-10 hover:bg-slate-300 rounded-full p-1' onClick={() => goOrder(index)}>
+                            <th className='w-full p-2 flex items-center'>
+                                <button className=' text-2xl font-mono font-normal tracking-widest mr-10 hover:bg-slate-300 rounded-full p-1' onClick={() => goOrder(index)}>
                                     <PropaneIcon className={`text-blue-900`} style={{ fontSize: '2rem'}}/>
                                 </button>
-                                {field.estado >= 4 &&
-                                    <button className='text-2xl font-mono font-normal tracking-widest hover:bg-slate-300 rounded-full p-1'>
-                                        <ArticleIcon className={`text-blue-900`} style={{ fontSize: '2rem'}}/>
+                               
+                                    <button disabled={field?.estado < 4} className={` ${!field.estado < 4 && "hover:bg-slate-300"} text-2xl font-mono font-normal tracking-widest rounded-full p-1`}>
+                                        <ArticleIcon className={`${field?.estado < 4 ? "text-slate-600" : "text-blue-900"}`} style={{ fontSize: '2rem'}}/>
                                     </button>
-                                }
+                              
                             </th>
                         )}
                             
@@ -100,11 +100,13 @@ export default function DefaultTable({headers, data, setActual, bombs}) {
                 </tbody>
             </table>
         </div>
-        <div className='flex justify-center'>
-            <button className='w-40 h-10 rounded-b-full bg-slate-700 hover:bg-gray-600'>
-                       <AddCircleIcon className={`text-slate-200`} style={{ fontSize: '2rem'}} onClick={() => openEditModal(false)}/> 
-            </button>
-        </div>
+        {!bombs && (
+            <div className='flex justify-center'>
+                <button className='w-40 h-10 rounded-b-full bg-slate-700 hover:bg-gray-600'>
+                        <AddCircleIcon className={`text-slate-200`} style={{ fontSize: '2rem'}} onClick={() => openEditModal(false)}/> 
+                </button>
+            </div>
+        )}
        
     </>
   );

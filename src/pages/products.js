@@ -28,7 +28,15 @@ const Products = () => {
                 ) : (
                     products?.length > 0 ? (
                         <div className='mt-20'>
-                            <DefaultTable headers={headers} data={products} tipo="product" setActual={handleActualProduct}/>
+                            <DefaultTable headers={headers} data={
+                                products.map((product) => { 
+                                    return {
+                                        nombre: product.nombre,
+                                        descripcion: product.descripcion,
+                                        code: product.code
+                                    }
+                                })     
+                            } tipo="product" setActual={handleActualProduct}/>
                         </div>
                     ) : (
                         <>

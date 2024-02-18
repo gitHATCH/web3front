@@ -16,6 +16,7 @@ const TruckProvider = (props) => {
         try {
             const response = await axiosClient.get('/camion/find-all', { headers: { Authorization: `Bearer ${token}` } });
             const data = response.data
+            /*
             .map((truck) => { 
                 return {
                     patente: truck.patente,
@@ -23,7 +24,8 @@ const TruckProvider = (props) => {
                     totalCisterna: truck.totalCisterna,
                     code: truck.code,
                 }
-            });     
+            });   
+            */  
             setTrucks(data)
         } catch (error) {
             console.log(error);

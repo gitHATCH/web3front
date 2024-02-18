@@ -28,7 +28,19 @@ import ModalEditOrder from '../components/Modals/ModalEditOrder'
                 ) : (
                     orders?.length > 0 ? (
                         <div className='mt-20'>
-                            <DefaultTable headers={headers} data={orders} tipo="order" setActual={handleActualOrder}/>
+                            <DefaultTable headers={headers} data={
+                                orders .map((orden) => { 
+                                    return {
+                                        numeroOrden: orden.numeroOrden,
+                                        estado: orden.estado,
+                                        preset: orden.preset,
+                                        camion: orden.camion.patente,
+                                        cliente: orden.cliente.razonSocial,
+                                        chofer: orden.chofer.dni,
+                                        producto: orden.producto.nombre,
+                                    }
+                                })   
+                            } tipo="order" setActual={handleActualOrder}/>
                         </div>
                     ) : (
                         <>

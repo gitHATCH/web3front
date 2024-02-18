@@ -10,7 +10,7 @@ const Bombs = () => {
     const [orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder] = useContext(OrderContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Numero", "Estado", "Preset", "Camion", "Cliente", "Chofer", "Producto"]
+    const headers = ["Numero", "Estado", "Preset", "Camion", "Cliente", "Chofer", "Producto", "Acciones"]
 
     useEffect(() => {
         getOrders()
@@ -28,7 +28,19 @@ const Bombs = () => {
                 ) : (
                     orders?.length > 0 ? (
                         <div className='mt-20'>
-                            <DefaultTable headers={headers} data={orders} setActual={handleActualOrder} bombs={true}/>
+                            <DefaultTable headers={headers} data={
+                                orders.map((orden) => { 
+                                    return {
+                                        numeroOrden: orden.numeroOrden,
+                                        estado: orden.estado,
+                                        preset: orden.preset,
+                                        camion: orden.camion.patente,
+                                        cliente: orden.cliente.razonSocial,
+                                        chofer: orden.chofer.dni,
+                                        producto: orden.producto.nombre,
+                                    }
+                                })   
+                            } setActual={handleActualOrder} bombs={true}/>
                         </div>
                     ) : (
                         <>

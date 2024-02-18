@@ -16,13 +16,15 @@ const ProductProvider = (props) => {
         try {
             const response = (await axiosClient.get('/producto/find-all', { headers: { Authorization: `Bearer ${token}` } }));
             const data = response.data
+            /*
             .map((product) => { 
                 return {
                     nombre: product.nombre,
                     descripcion: product.descripcion,
                     code: product.code
                 }
-            })          
+            })     
+            */     
             setProducts(data)
 
         } catch (error) {
