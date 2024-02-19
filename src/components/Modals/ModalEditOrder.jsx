@@ -153,7 +153,7 @@ const ModalEditOrder = ({editActual}) => {
             <Fade in={modalEdit}>
                 <Box sx={style} className="rounded-xl">
                     <div className='flex'>
-                    <div className='flex-1 flex-col mt-5'>
+                    <div className='flex-1 flex-col mt-5 '>
                         <div className='flex'>
                             <form className='w-full flex-row justify-center'>
                                 <div className='mt-10 flex items-center'>

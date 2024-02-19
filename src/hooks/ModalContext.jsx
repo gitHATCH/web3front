@@ -9,6 +9,7 @@ const ModalProvider = (props) => {
     const [modalAdd, setModalAdd] = useState(false)
     const [modalLogOut, setModalLogOut] = useState(false)
     const [modalPassword, setModalPassword] = useState(false)
+    const [modalConfigOrder, setModalConfigOrder] = useState(false)
     const router = useRouter()
 
     useEffect(() => {
@@ -16,7 +17,12 @@ const ModalProvider = (props) => {
         setModalEdit(false)
         setModalLogOut(false)
         setModalPassword(false)
+        setModalConfigOrder(false)
       }, [router.pathname])
+
+      const handleModalConfigOrder = () => {
+        setModalConfigOrder(!modalConfigOrder)
+      }
 
     const handleModalDelete = () => {
         setModalDelete(!modalDelete)
@@ -45,7 +51,7 @@ const ModalProvider = (props) => {
     }
     
     return (
-        <ModalContext.Provider value={[modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd, modalPassword, handleModalPassword]}>
+        <ModalContext.Provider value={[modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd, modalPassword, handleModalPassword, modalConfigOrder, handleModalConfigOrder]}>
             {props.children}
         </ModalContext.Provider>
     )      

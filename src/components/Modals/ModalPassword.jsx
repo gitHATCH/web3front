@@ -8,21 +8,27 @@ import Typography from '@mui/material/Typography';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { toast } from 'react-toastify';
 import { ModalContext } from '../../hooks/ModalContext';
+import { OrderContext } from '../../hooks/OrderContext'
 import { AuthContext } from '../../hooks/AuthContext';
 import { FormControl, FormLabel, Input } from '@mui/material';
 import TextField from '@mui/material/TextField';
 
 
-const ModalPassword = ({pass, setPass, turnBomb}) => {
-    const [modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd, modalPassword, handleModalPassword] = useContext(ModalContext);
-   
+const ModalPassword = ({setColor}) => {
+    const [modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd, modalPassword, handleModalPassword, modalConfigOrder, handleModalConfigOrder] = useContext(ModalContext);
+    const [orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil,disableAlarm] = useContext(OrderContext)
+    const [pass, setPass] = useState(0)
+
+    const handlePass = (event) => {
+        setPass(Number(event.target.value))
+    }
 
     const cancelOption = () => {
-        setPass("")
         handleModalPassword()
     }
+
     const confirmOption = () => {
-        turnBomb()
+        turnBomb(setColor, pass)
         handleModalPassword()
     }
 
@@ -59,7 +65,7 @@ const ModalPassword = ({pass, setPass, turnBomb}) => {
                             Ingrese Password
                         </Typography>
                         <div className='w-[300px] mt-5'>
-                            <input className='w-full rounded h-8 p-2' />
+                            <input type='number' defaultValue={0} onChange={handlePass} className='w-full rounded h-8 p-2' />
                         </div>
                        
                         <div className='flex justify-between mt-10'>

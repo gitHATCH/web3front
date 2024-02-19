@@ -9,6 +9,7 @@ const OrderProvider = (props) => {
     const [orders, setOrders] = useState([])
     const [actualOrder, setActualOrder] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [pass, setPass] = useState(null)
     const token = localStorage.getItem('token');
     
     const getOrders = async () => {
@@ -69,7 +70,7 @@ const OrderProvider = (props) => {
         try {
             const sendOrder = {...order, camion: order.camion.code, cliente: order.cliente.code, chofer: order.chofer.code, producto: order.producto.code}
             await axiosClient.post('/orden/b2b', sendOrder, { headers: { Authorization: `Bearer ${token}` } })
-            order = {numeroOrden: order.numeroOrden, estado:1, preset:order.preset, camion: order.camion.patente, cliente: order.cliente.razonSocial, chofer: order.chofer.dni, producto: order.producto.nombre}
+            order = {...order, estado:1}
             const updatedOrders = [...orders];
             updatedOrders.push(order)
             setOrders(updatedOrders);
@@ -79,6 +80,16 @@ const OrderProvider = (props) => {
         }   
     }
 
+    const changeUmbral = async (umbral) => {
+        try {
+            const numeroOrden = Number(actualOrder.numeroOrden)
+            const response = await axiosClient.post(`/orden/temperatura-umbral/${umbral}`, null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            setActualOrder({...actualOrder, temperaturaUmbral:umbral});
+            toast.success('Umbral cambiado correctamente!')
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const addTara = async() => {
         try {
@@ -86,35 +97,61 @@ const OrderProvider = (props) => {
             const randomNumber = Math.random() * (25000 - 10000) + 10000;
             const tara = Math.floor(randomNumber);
             const response = await axiosClient.put('/orden/checkin', {pesaje_inicial:tara}, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
-            console.log(response);
+            
             setActualOrder({...actualOrder, tara: tara, estado:2});
-            toast.info('Clave de activación copiada al portapapeles!')
-            navigator.clipboard.writeText(response.data.password)
+            return response.data.password
+            
         } catch (error) {
             console.log(error);
         }
     }
 
-    const turnBomb = async (setColor) => {
-        try {
-            const updatedOrders = [...orders];
-            const newTime = new Date();
-            updatedOrders[actualOrder] = {...updatedOrders[actualOrder], tiempoInicio: newTime, cargas: []};
-            setOrders(updatedOrders);
-            loadTruck(() => setColor(),newTime);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const disableAlarm = async () => {
+    const turnBomb = async (setColor, pass) => {
+        const colorOff = "text-red-800 hover:text-red-900"
+        const colorOn = "text-green-800 hover:text-green-900"
+        let ultimaMasa = actualOrder.ultimaMasa;
+        const temperaturaUmbral = actualOrder.temparaturaUmbral;
         const numeroOrden = Number(actualOrder.numeroOrden)
+        const interval = setInterval(async() => {
+            try {
+                const detalle = {
+                    masa: (ultimaMasa ?? 0) + Math.floor(Math.random() * (500 - 300) + 300),
+                    densidad: Math.random() * (0.9 - 0.3) + 0.3,
+                    temperatura: Math.floor(Math.random() * (100 - 0) + 0),
+                    caudal: Math.floor(Math.random() * (70 - 10) + 10),
+                }
+
+                if(detalle.masa > ultimaMasa.preset) {
+                    detalle.masa = ultimaMasa.preset
+                }
+
+                const response = await axiosClient.post(`/orden/detalle`, detalle, { headers: { Password: pass, NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+
+                if(detalle.masa >= ultimaMasa.preset) {
+                    clearInterval(interval)
+                    toast.success("Carga completada")
+                    setColor(colorOff)
+                    return
+                }
+
+                if(!ultimaMasa) setColor(colorOn)
+
+            } catch (error) {
+                toast.error(error.response.data)
+                clearInterval(interval)
+                return
+            }
+        }, 10000)
+        return   
+    }
+
+    const updateOrder = async () => {
         try {
-            const response = await axiosClient.post('/orden/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
-            toast.success("Alarma desactivada")
-            setActualOrder({...actualOrder, alarma:false})
+          const numeroOrden = Number(actualOrder.numeroOrden)
+          const { data } = await axiosClient.get(`/orden/find/${numeroOrden}`, { headers: { Authorization: `Bearer ${token}` } });
+          setActualOrder(data)
         } catch (error) {
-            console.log(error);
+            console.error(error)
         }
     }
 
@@ -158,12 +195,23 @@ const OrderProvider = (props) => {
         }
     }
 
+    const disableAlarm = async () => {
+        const numeroOrden = Number(actualOrder.numeroOrden)
+        try {
+            const response = await axiosClient.post('/orden/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            toast.success("Alarma desactivada")
+            setActualOrder({...actualOrder, alarma:false})
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const getConcil = () => {
         console.log('getConcil');
     }
     
     return (
-        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil,disableAlarm]}>
+        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil,disableAlarm,changeUmbral,updateOrder]}>
             {props.children}
         </OrderContext.Provider>
     )      
