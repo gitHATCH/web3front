@@ -10,7 +10,7 @@ const Bombs = () => {
     const [orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder] = useContext(OrderContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Numero", "Estado", "Preset", "Camion", "Cliente", "Chofer", "Producto", "Acciones"]
+    const headers = ["Numero", "Estado", "Preset", "Camion", "Cliente", "Chofer", "Producto","Código", "Acciones"]
 
     useEffect(() => {
         getOrders()
@@ -38,9 +38,10 @@ const Bombs = () => {
                                         cliente: orden.cliente.razonSocial,
                                         chofer: orden.chofer.dni,
                                         producto: orden.producto.nombre,
+                                        codigoExterno: orden.codigoExterno,
                                     }
                                 })   
-                            } setActual={handleActualOrder} bombs={true}/>
+                            } setActual={handleActualOrder} bombs={true} isOrden={true}/>
                         </div>
                     ) : (
                         <>

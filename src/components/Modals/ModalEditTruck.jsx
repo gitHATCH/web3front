@@ -55,7 +55,7 @@ const ModalEditTruck = ({editActual}) => {
         if(!modalAdd){
             editActual(truck)
         }else{
-            console.log(truck);
+           
             if(!truck.patente || !truck.descripcion || !truck.datosCisterna.length > 0){
                 toast.error("Todos los campos son obligatorios")
                 return

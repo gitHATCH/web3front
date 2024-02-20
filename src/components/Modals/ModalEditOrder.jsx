@@ -109,11 +109,11 @@ const ModalEditOrder = ({editActual}) => {
         handleModalEdit()
     }
     const confirmOption = () => {
-        // console.log(order);
+       
         if(!modalAdd){
             editActual(order)
         }else{
-            console.log(order);
+            
             if(!order.numeroOrden || !order.preset || !order.camion || !order.cliente || !order.chofer || !order.producto){
                 toast.error("Todos los campos son obligatorios")
                 return

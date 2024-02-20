@@ -29,8 +29,9 @@ import { useRouter } from 'next/router';
 const SidebarLayout = () => {
     const [collaps, handleCollaps, showStatus, okShowStatus, hideShowStatus, actualPage, modal, handleOpenModal] = useContext(SlidebarContext)
     const [modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut] = useContext(ModalContext)
-    const {auth} = useContext(AuthContext);
+    const {auth,user} = useContext(AuthContext);
     const router = useRouter()
+    console.log(user);
 
     // useEffect(() => {
     //     if(!auth && router.pathname !== '/') {
@@ -58,20 +59,20 @@ const SidebarLayout = () => {
                     width='100%'
                 >
                     <Menu closeOnClick={true} className='flex h-full w-full justify-between '>
-                        <div className='h-5/6'>
+                        <div className='h-5/6 w-full'>
                             {/*HOME*/}
                             <MenuItem
-                                className={`${collaps ? '' : ' bg-slate-700'} hover:text-white`}
+                                className={`${collaps ? '' : ' bg-slate-700 '} hover:text-white`}
                                 icon={<MenuOutlinedIcon className={`${collaps ? 'hover:text-slate-600' : ''} text-slate-900`} style={{ fontSize: '2rem'}}/>}
                                 onClick={() => {
                                     handleCollaps(!collaps)
                                 }}
                                 style={{ 
                                     height: "70px",
-                                    width: "405px",
+                                    width: "500px"
                                 }} 
                             >
-                                
+                                <h2 className='text-white text-lg ml-10'>{user}</h2>
                             </MenuItem>
                             <hr className='h-0.5 bg-slate-200 border-slate-200'/>
                             {/*Orders*/}
@@ -80,7 +81,8 @@ const SidebarLayout = () => {
                                     icon={<ReceiptIcon className={`${collaps ? (actualPage === '/orders' ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-20 hover:text-green-900`}
                                     style={{ 
-                                        height: "90px"
+                                        height: "90px",
+                                        width: "500px"
                                     }} 
                                     onClick={() => {
                                         handleCollaps(true)
@@ -96,7 +98,8 @@ const SidebarLayout = () => {
                                     icon={<PropaneTankIcon className={`${collaps ? (actualPage === '/products' ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-0 hover:text-green-900`}
                                     style={{ 
-                                        height: "90px"
+                                        height: "90px",
+                                        width: "500px"
                                     }} 
                                     onClick={() => {
                                         handleCollaps(true)
@@ -112,7 +115,8 @@ const SidebarLayout = () => {
                                     icon={<LocalShippingIcon className={`${collaps ? (actualPage === '/trucks' ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-0 hover:text-green-900`}
                                     style={{ 
-                                        height: "90px"
+                                        height: "90px",
+                                        width: "500px"
                                     }} 
                                     onClick={() => {
                                         handleCollaps(true)
@@ -128,7 +132,8 @@ const SidebarLayout = () => {
                                     icon={<SportsMotorsportsIcon className={`${collaps ? (actualPage === '/drivers' ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-0 hover:text-green-900`}
                                     style={{ 
-                                        height: "90px"
+                                        height: "90px",
+                                        width: "500px"
                                     }} 
                                     onClick={() => {
                                         handleCollaps(true)
@@ -144,7 +149,8 @@ const SidebarLayout = () => {
                                     icon={<PersonIcon className={`${collaps ? (actualPage === '/clients' ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-0  hover:text-green-900`}
                                     style={{ 
-                                        height: "90px"
+                                        height: "90px",
+                                        width: "500px"
                                     }} 
                                     onClick={() => {
                                         handleCollaps(true)
@@ -160,7 +166,8 @@ const SidebarLayout = () => {
                                     icon={<LocalGasStationIcon className={`${collaps ? (actualPage === '/bombs' ? 'text-green-900' : 'text-slate-900 hover:text-slate-600') : 'text-slate-900'} `} style={{ fontSize: '2rem'}}/>} 
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-20  hover:text-green-900`}
                                     style={{ 
-                                        height: "90px"
+                                        height: "90px",
+                                        width: "500px"
                                     }} 
                                     onClick={() => {
                                         handleCollaps(true)
@@ -177,8 +184,9 @@ const SidebarLayout = () => {
                                     className={`${collaps ? 'slidebar-icons-close' : ''} 2xl:mt-0 hover:text-green-900 text-left`}
                                     style={{ 
                                         height: "90px",
-                                        width: "400px",
-                                    }} 
+                                        width: "500px"
+                                    }}
+                                  
                                     onClick={() => {
                                         handleCollaps(true)
                                     }}
@@ -187,10 +195,7 @@ const SidebarLayout = () => {
                                 </MenuItem>
                             </button>
                         </div>
-                        <div className=''>
-                            {/*Logout*/}
-                            <hr className='h-0.5 bg-slate-200 border-slate-200'/>
-                        </div>
+                    
                         
                     </Menu>
                     <div className='flex-1'></div>     

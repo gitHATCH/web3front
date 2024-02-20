@@ -64,7 +64,7 @@ const ProductProvider = (props) => {
         try {
 
             product = {...product, code: uuidv4()};
-            await axiosClient.post('/producto', {...product, id: Date.now()}, { headers: { Authorization: `Bearer ${token}` } })
+            await axiosClient.post('/producto', product, { headers: { Authorization: `Bearer ${token}` } })
             const updatedProducts = [...products];
             updatedProducts.push(product)
             setProducts(updatedProducts);

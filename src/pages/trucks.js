@@ -10,7 +10,7 @@ const Trucks = () => {
     const [trucks,getTrucks,loading,actualTruck,handleActualTruck,deleteTruck,editTruck] = useContext(TruckContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Patente", "Descripcion", "Cisternas", "Código Externo"]
+    const headers = ["Patente", "Descripcion", "Cisternas", "Código"]
 
     useEffect(() => {
         getTrucks()
@@ -26,7 +26,7 @@ const Trucks = () => {
                         <Spinner/>
                     </div>
                 ) : (
-                    trucks?.length > 0 ? (
+                    
                         <div className='mt-20'>
                             <DefaultTable headers={headers} data={
                                     trucks.map((truck) => { 
@@ -40,11 +40,7 @@ const Trucks = () => {
                                 } 
                             tipo="truck" setActual={handleActualTruck}/>
                         </div>
-                    ) : (
-                        <>
-                            <h1 className='text-center font-mono text-4xl mt-10 mb-5'>No hay camiones todavía...</h1>
-                        </>
-                    )
+                    
                 )}
             </div>
             { modalDelete && <ModalDelete deleteActual={() => deleteTruck()}/> }

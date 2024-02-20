@@ -10,7 +10,6 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter()
-  // console.log(router.pathname);
 
   useEffect(() => {
     
@@ -33,7 +32,7 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(username, password)
+ 
     if(!username || !password){
       toast.error("Todos los campos son obligatorios")
       return

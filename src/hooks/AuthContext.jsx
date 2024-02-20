@@ -11,6 +11,9 @@ const AuthProvider = (props) => {
     const [auth, setAuth] = useState(false)
     const [loading, setLoading] = useState(true)
     const router = useRouter()
+    const [role, setRole] = useState(false)
+    const [user, setUser] = useState(false)
+ 
 
     if(auth) {
         const decodedToken = jwtDecode(auth);
@@ -49,9 +52,23 @@ const AuthProvider = (props) => {
         }
 
         setAuth(token)
+        getRole()
         router.push("/orders")
 
     }
+
+    const getRole = async () => {
+        try {
+            const username = localStorage.getItem("user");
+            const token = localStorage.getItem("token");
+            const response = await axiosClient.get('/authorization/my-rols?username=' + username, { headers: { Authorization: `Bearer ${token}` } });
+          
+            setRole(response.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const unAuthorize = async() => {
         setAuth(false)
         setLoading(false)
@@ -74,6 +91,8 @@ const AuthProvider = (props) => {
                       'Content-Type': 'application/x-www-form-urlencoded'
                     }
                   });
+            localStorage.setItem('user',username);
+            setUser(username)
             localStorage.setItem('token',response.data);
             authorize();
             
@@ -83,7 +102,7 @@ const AuthProvider = (props) => {
     }
 
     return (
-        <AuthContext.Provider value={{auth,handleAuth,loading,authorize,unAuthorize,loginUser}}>
+        <AuthContext.Provider value={{auth,handleAuth,loading,authorize,unAuthorize,loginUser, role, user}}>
             {props.children}
         </AuthContext.Provider>
     )      

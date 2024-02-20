@@ -62,7 +62,7 @@ const TruckProvider = (props) => {
 
     const addTruck = async(truck) => {
         try {
-            console.log(truck);
+           
 
             truck = {
                 ...truck, 

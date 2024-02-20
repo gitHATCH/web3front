@@ -19,7 +19,7 @@ export default function Home() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(username, password)
+   
     if(!username || !password){
       toast.error("Todos los campos son obligatorios")
       return

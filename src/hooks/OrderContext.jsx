@@ -8,6 +8,7 @@ const OrderContext = React.createContext([{}, ()=>{}])
 const OrderProvider = (props) => {
     const [orders, setOrders] = useState([])
     const [actualOrder, setActualOrder] = useState(null)
+    const [actualConcil, setActualConcil] = useState({})
     const [loading, setLoading] = useState(true)
     const [pass, setPass] = useState(null)
     const token = localStorage.getItem('token');
@@ -37,9 +38,11 @@ const OrderProvider = (props) => {
         } 
         setLoading(false) 
     }
+
+    
     
     const handleActualOrder = (order) => {
-        setActualOrder(orders[order])
+        updateOrder(orders[order].numeroOrden)
     }
 
     const deleteOrder = async() => {
@@ -55,7 +58,7 @@ const OrderProvider = (props) => {
 
     const editOrder = async(order) => {
         try {
-            console.log(order);
+          
             const updatedOrders = [...orders];
             updatedOrders[actualOrder] = order;
             setOrders(updatedOrders);
@@ -68,15 +71,20 @@ const OrderProvider = (props) => {
 
     const addOrder = async(order) => {
         try {
-            const sendOrder = {...order, camion: order.camion.code, cliente: order.cliente.code, chofer: order.chofer.code, producto: order.producto.code}
+            const codeExt = uuidv4()
+            const sendOrder = {...order, camion: order.camion.code, cliente: order.cliente.code, chofer: order.chofer.code, producto: order.producto.code, codigoExterno: codeExt}
             await axiosClient.post('/orden/b2b', sendOrder, { headers: { Authorization: `Bearer ${token}` } })
-            order = {...order, estado:1}
+            order = {...order, estado:1, codigoExterno:codeExt}
             const updatedOrders = [...orders];
             updatedOrders.push(order)
             setOrders(updatedOrders);
             toast.success("Orden agregada correctamente")
         } catch (error) {
             console.log(error);
+            if (error.code === 409){
+                const codeExt = uuidv4()
+                addOrder({...sendOrder, codigoExterno:codeExt})
+            }
         }   
     }
 
@@ -106,48 +114,82 @@ const OrderProvider = (props) => {
         }
     }
 
+  
     const turnBomb = async (setColor, pass) => {
-        const colorOff = "text-red-800 hover:text-red-900"
         const colorOn = "text-green-800 hover:text-green-900"
-        let ultimaMasa = actualOrder.ultimaMasa;
-        const temperaturaUmbral = actualOrder.temparaturaUmbral;
         const numeroOrden = Number(actualOrder.numeroOrden)
-        const interval = setInterval(async() => {
+        let ultimaMasa = actualOrder.ultimaMasa;
+        let primero = true
+        
+        const loadOrder = async () => {
             try {
                 const detalle = {
                     masa: (ultimaMasa ?? 0) + Math.floor(Math.random() * (500 - 300) + 300),
-                    densidad: Math.random() * (0.9 - 0.3) + 0.3,
+                    densidad: (Math.random() * (0.9 - 0.3) + 0.3).toFixed(2),
                     temperatura: Math.floor(Math.random() * (100 - 0) + 0),
                     caudal: Math.floor(Math.random() * (70 - 10) + 10),
                 }
-
-                if(detalle.masa > ultimaMasa.preset) {
-                    detalle.masa = ultimaMasa.preset
+    
+                if(detalle.masa > actualOrder.preset) {
+                    detalle.masa = actualOrder.preset
                 }
-
-                const response = await axiosClient.post(`/orden/detalle`, detalle, { headers: { Password: pass, NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
-
-                if(detalle.masa >= ultimaMasa.preset) {
+    
+                await axiosClient.post(`/orden/detalle`, detalle, { headers: { Password: pass, NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+    
+                if(detalle.masa >= actualOrder.preset) {
                     clearInterval(interval)
-                    toast.success("Carga completada")
-                    setColor(colorOff)
                     return
                 }
-
-                if(!ultimaMasa) setColor(colorOn)
-
+    
+                if(primero) {
+                    primero = false
+                    setColor(colorOn)
+                    toast.success("Carga iniciada")
+                } 
+    
+                ultimaMasa = detalle.masa
+    
             } catch (error) {
-                toast.error(error.response.data)
+                if(error.response.data !== "Error, orden no disponible para la carga."){
+                    toast.error(error.response.data)
+                }
                 clearInterval(interval)
                 return
             }
-        }, 10000)
-        return   
+        }
+
+        loadOrder();
+        const interval = setInterval(() => {
+            loadOrder();
+        }, 10000);
+           
     }
 
-    const updateOrder = async () => {
+    const stopOrder = async () => {
         try {
-          const numeroOrden = Number(actualOrder.numeroOrden)
+            const numeroOrden = Number(actualOrder.numeroOrden)
+            const response = await axiosClient.post('/orden/cierre/orden', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            updateOrder()
+            toast.success("Carga detenida")
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const sendFinalWhight = async () => {
+        try {
+            const numeroOrden = Number(actualOrder.numeroOrden)
+            const response = await axiosClient.put('/orden/checkout', {pesaje_final:actualOrder.tara+actualOrder.ultimaMasa}, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            updateOrder()
+            toast.success("Conciliaciones Habilitadas")
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateOrder = async (numero) => {
+        try {
+          const numeroOrden = numero ? numero : Number(actualOrder.numeroOrden)
           const { data } = await axiosClient.get(`/orden/find/${numeroOrden}`, { headers: { Authorization: `Bearer ${token}` } });
           setActualOrder(data)
         } catch (error) {
@@ -155,50 +197,11 @@ const OrderProvider = (props) => {
         }
     }
 
-    const loadTruck = async (setColor,newTime) => {
-        try {
-            let load = 0
-            const interval = setInterval(() => {
-                const tiempoTranscurrido = (Date.now() - newTime) / 1000;
-                const caudal = Math.random() * 100
-                const cargaRestante = orders[actualOrder].preset - load;
-                const eta = caudal > 0 ? cargaRestante / caudal : Infinity;
-                const ultimaCarga = {
-                    temperatura: Math.random() * 100,
-                    densidad: Math.random() * 100,
-                    caudal: caudal,
-                    masa: load,
-                    eta: eta,
-                    tiempo: tiempoTranscurrido,
-                    fecha: Date.now(),
-                }
-                setOrders(prevOrders => {
-                    const updatedOrders = [...prevOrders];
-                    updatedOrders[actualOrder] = {...updatedOrders[actualOrder], ultimaCarga: ultimaCarga};
-                    updatedOrders[actualOrder].cargas = [...(updatedOrders[actualOrder].cargas || []), ultimaCarga];
-                    return updatedOrders;
-                });
-                load += 500
-                if(load > orders[actualOrder].preset) {
-                    clearInterval(interval)
-                    setOrders(prevOrders => {
-                        const updatedOrders = [...prevOrders];
-                        updatedOrders[actualOrder] = {...updatedOrders[actualOrder], estado: 3, tiempoFin: new Date()};
-                        return updatedOrders;
-                    });
-                    toast.success("Carga completada")
-                    setColor("text-red-800 hover:text-red-900")
-                }
-            }, 1000);
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     const disableAlarm = async () => {
         const numeroOrden = Number(actualOrder.numeroOrden)
         try {
-            const response = await axiosClient.post('/orden/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            const response = await axiosClient.post('/alarma/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
             toast.success("Alarma desactivada")
             setActualOrder({...actualOrder, alarma:false})
         } catch (error) {
@@ -206,12 +209,55 @@ const OrderProvider = (props) => {
         }
     }
 
-    const getConcil = () => {
-        console.log('getConcil');
+    const getAConcil = async (numero) => {
+       
+        
+        try {
+     
+            const { data } = await axiosClient.get(`/orden/conciliacion`, { headers: { NumeroOrden: numero, Authorization: `Bearer ${token}` } });
+     
+            setActualConcil({
+                pesaje_inicial: data.pesaje_inicial,
+                pesaje_final: data.pesaje_final,
+                producto_cargado: data.producto_cargado,
+                neto_por_balanza: data.neto_por_balanza,
+                diferencia_balanza_caudalimetro: data.diferencia_balanza_caudalimetro,
+                promedio_temperatura: data.promedio_temperatura,
+                promedio_densidad: data.promedio_densidad,
+                promedio_caudal: data.promedio_caudal,
+            })
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getConcil = async () => {
+        
+        const numeroOrden = Number(actualOrder.numeroOrden)
+
+        try {
+     
+            const { data } = await axiosClient.get(`/orden/conciliacion`, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } });
+     
+            setActualConcil({
+                pesaje_inicial: data.pesaje_inicial,
+                pesaje_final: data.pesaje_final,
+                producto_cargado: data.producto_cargado,
+                neto_por_balanza: data.neto_por_balanza,
+                diferencia_balanza_caudalimetro: data.diferencia_balanza_caudalimetro,
+                promedio_temperatura: data.promedio_temperatura,
+                promedio_densidad: data.promedio_densidad,
+                promedio_caudal: data.promedio_caudal,
+            })
+        } catch (error) {
+            console.log(error);
+        }
+        
     }
     
     return (
-        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil,disableAlarm,changeUmbral,updateOrder]}>
+        <OrderContext.Provider value={[orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,disableAlarm,changeUmbral,updateOrder,stopOrder,sendFinalWhight,actualConcil,getConcil,getAConcil]}>
             {props.children}
         </OrderContext.Provider>
     )      

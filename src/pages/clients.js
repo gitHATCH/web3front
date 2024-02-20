@@ -12,11 +12,13 @@ const Clients = () => {
 
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Razón Social", "Contacto", "Código Externo"]
+    const headers = ["Razón Social", "Contacto", "Código"]
     
     useEffect(() => {
         getClients()
     }, [])
+
+  
     
   return (
     <>
@@ -28,15 +30,17 @@ const Clients = () => {
                         <Spinner/>
                     </div>
                 ) : (
-                    clients?.length > 0 ? (
+                    
                         <div className='mt-20'>
-                            <DefaultTable headers={headers} data={clients} tipo="client" setActual={handleActualClient}/>
+                            <DefaultTable headers={headers} data={clients.map((client) => {
+                                return {
+                                    razonSocial: client.razonSocial,
+                                    contacto: client.contacto,
+                                    code: client.code,
+                                }
+                            })} tipo="client" setActual={handleActualClient}/>
                         </div>
-                    ) : (
-                        <>
-                            <h1 className='text-center font-mono text-4xl mt-10 mb-5'>No hay clientes todavía...</h1>
-                        </>
-                    )
+                  
                 )}
             </div>
             { modalDelete && <ModalDelete deleteActual={() => deleteClient()}/> }

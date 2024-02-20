@@ -32,7 +32,7 @@ const Layout = ({children}) => {
                 <TruckProvider>
                   <ProductProvider>
                   <div className='flex flex-row h-screen w-full app '>
-                    <div className={`${collaps ? "md:w-20 2xl:w-20" : "md:w-1/4 2xl:w-1/6"}`}>
+                    <div className={`${collaps ? "md:w-20 2xl:w-20" : "md:w-1/4 2xl:w-[350px]"}`}>
                       <SidebarLayout/>
                     </div>
                     <div className={`w-full flex-1 overflow-y-auto`}>

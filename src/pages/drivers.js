@@ -10,7 +10,7 @@ const Drivers = () => {
     const [drivers,getDrivers,loading,actualDriver,handleActualDriver,deleteDriver,editDriver] = useContext(DriverContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["DNI", "Nombre", "Apellido", "Código Externo"]
+    const headers = ["DNI", "Nombre", "Apellido", "Código"]
 
     useEffect(() => {
         getDrivers()
@@ -26,15 +26,11 @@ const Drivers = () => {
                         <Spinner/>
                     </div>
                 ) : (
-                    drivers?.length > 0 ? (
+                   
                         <div className='mt-20'>
                             <DefaultTable headers={headers} data={drivers} tipo="driver" setActual={handleActualDriver}/>
                         </div>
-                    ) : (
-                        <>
-                            <h1 className='text-center font-mono text-4xl mt-10 mb-5'>No hay conductores todavía...</h1>
-                        </>
-                    )
+                   
                 )}
             </div>
             { modalDelete && <ModalDelete deleteActual={() => deleteDriver()}/> }

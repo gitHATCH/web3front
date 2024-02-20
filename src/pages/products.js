@@ -10,7 +10,7 @@ const Products = () => {
     const [products,getProducts,loading,actualProduct,handleActualProduct,deleteProduct,editProduct] = useContext(ProductContext)
     const [modalDelete, modalEdit] = useContext(ModalContext);
 
-    const headers = ["Nombre", "Descripcion", "Código Externo"]
+    const headers = ["Nombre", "Descripcion", "Código"]
 
     useEffect(() => {
         getProducts()
@@ -26,7 +26,7 @@ const Products = () => {
                         <Spinner/>
                     </div>
                 ) : (
-                    products?.length > 0 ? (
+                    
                         <div className='mt-20'>
                             <DefaultTable headers={headers} data={
                                 products.map((product) => { 
@@ -38,11 +38,7 @@ const Products = () => {
                                 })     
                             } tipo="product" setActual={handleActualProduct}/>
                         </div>
-                    ) : (
-                        <>
-                            <h1 className='text-center font-mono text-4xl mt-10 mb-5'>No hay productos todavía...</h1>
-                        </>
-                    )
+                   
                 )}
             </div>
             { modalDelete && <ModalDelete deleteActual={() => deleteProduct()}/> }
