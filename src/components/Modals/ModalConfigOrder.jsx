@@ -11,9 +11,12 @@ import { ModalContext } from '../../hooks/ModalContext';
 import { OrderContext } from '../../hooks/OrderContext'
 
 const ModalConfigOrder = () => {
-  const [modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd, modalConfigOrder, handleModalConfigOrder] = useContext(ModalContext);
-  const [orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,getConcil,disableAlarm,changeUmbral] = useContext(OrderContext)
+
+  const [modalDelete, modalEdit, handleModalDelete, handleModalEdit, handleModalLogOut, modalLogOut, modalAdd, handleModalAdd, modalPassword, handleModalPassword, modalConfigOrder, handleModalConfigOrder, modalConcil, handleModalConcil] = useContext(ModalContext);
+  const [orders,getOrders,loading,actualOrder,handleActualOrder,deleteOrder,editOrder,addOrder,addTara,turnBomb,disableAlarm,changeUmbral,updateOrder,stopOrder,sendFinalWhight,actualConcil,getConcil,getAConcil] = useContext(OrderContext)
   const [umbral, setUmbral] = useState(actualOrder.temperaturaUmbral ?? 0)
+
+    console.log(umbral);
 
   const handleUmbral = (event) => {
       setUmbral(Number(event.target.value));
@@ -40,20 +43,20 @@ const ModalConfigOrder = () => {
       p: 4
     };   
 
-return (
-  <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          open={modalConfigOrder}
-          onClose={handleModalConfigOrder}
-          closeAfterTransition
-          slots={{ backdrop: Backdrop }}
-          slotProps={{
-          backdrop: {
-              timeout: 500,
-          },
-          }}
-      >
+    return (
+    <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            open={modalConfigOrder}
+            onClose={handleModalConfigOrder}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+            backdrop: {
+                timeout: 500,
+            },
+            }}
+        >
           <Fade in={modalConfigOrder}>
               <Box sx={style} className="rounded-xl">
                   <div className='flex'>

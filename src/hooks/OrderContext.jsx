@@ -92,7 +92,8 @@ const OrderProvider = (props) => {
         try {
             const numeroOrden = Number(actualOrder.numeroOrden)
             const response = await axiosClient.post(`/orden/temperatura-umbral/${umbral}`, null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
-            setActualOrder({...actualOrder, temperaturaUmbral:umbral});
+            console.log("AAAAAAAAAAAAAAAAAA");
+            updateOrder()
             toast.success('Umbral cambiado correctamente!')
         } catch (error) {
             console.log(error);
@@ -201,7 +202,7 @@ const OrderProvider = (props) => {
     const disableAlarm = async () => {
         const numeroOrden = Number(actualOrder.numeroOrden)
         try {
-            const response = await axiosClient.post('/alarma/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
+            const response = await axiosClient.post('/orden/aceptar-alarma', null, { headers: { NumeroOrden: numeroOrden, Authorization: `Bearer ${token}` } })
             toast.success("Alarma desactivada")
             setActualOrder({...actualOrder, alarma:false})
         } catch (error) {
